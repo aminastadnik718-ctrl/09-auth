@@ -7,10 +7,6 @@ export interface Note {
   updatedAt: string;
 }
 
-export interface NotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
 
 export interface CreateNoteData {
   title: string;

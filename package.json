@@ -13,9 +13,14 @@
     "@tanstack/react-query-devtools": "^5.101.4",
     "@tanstack/react-query-next-experimental": "^5.101.4",
     "axios": "^1.19.0",
+    "formik": "^2.4.9",
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-modal": "^3.16.3",
+    "react-paginate": "^8.3.0",
+    "use-debounce": "^10.1.1",
+    "yup": "^1.7.1"
   },
   "devDependencies": {
     "@types/node": "^20",
