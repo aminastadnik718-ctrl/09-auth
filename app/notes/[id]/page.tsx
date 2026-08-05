@@ -6,7 +6,7 @@ import {
 import { fetchNoteById } from "@/lib/api";
 import { getQueryClient } from "@/lib/getQueryClient";
 
-import NoteDetailsClient from "@/app/notes/id/NoteDetails.client";
+import NoteDetailsClient from "@/app/notes/[id]/NoteDetails.client";
 
 interface Props {
   params: Promise<{
