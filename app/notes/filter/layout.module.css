@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.notesWrapper {
+  flex: 1;
+}

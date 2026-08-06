@@ -1,4 +1,4 @@
-import css from "@/components/NotesPage/NotesPage.module.css";
+import css from "./layout.module.css";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,7 +11,11 @@ export default function FilterLayout({
 }: LayoutProps) {
   return (
     <section className={css.container}>
-      <aside className={css.sidebar}>{sidebar}</aside>
+      <aside className={css.sidebar}>
+        <h2>SIDEBAR</h2>
+        {sidebar}
+      </aside>
+
       <div className={css.notesWrapper}>{children}</div>
     </section>
   );
