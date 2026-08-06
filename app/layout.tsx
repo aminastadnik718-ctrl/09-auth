@@ -22,11 +22,17 @@ export const metadata: Metadata = {
   description: "Notes application",
 };
 
+interface RootLayoutProps {
+  children: React.ReactNode;
+  modal: React.ReactNode;
+}
+
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  modal,
+}: RootLayoutProps) {
+  
+
   return (
     <html
       lang="en"
@@ -38,7 +44,10 @@ export default function RootLayout({
 
           {children}
 
+          {modal}
+
           <Footer />
+            <div id="modal-root"></div>
         </TanStackProvider>
       </body>
     </html>
