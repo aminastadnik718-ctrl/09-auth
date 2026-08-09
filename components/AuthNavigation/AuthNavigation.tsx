@@ -9,10 +9,10 @@ import { useAuthStore } from "@/lib/store/authStore";
 export default function AuthNavigation() {
   const router = useRouter();
 
+  const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore(
     (state) => state.isAuthenticated,
   );
-
   const clearIsAuthenticated = useAuthStore(
     (state) => state.clearIsAuthenticated,
   );
@@ -20,17 +20,36 @@ export default function AuthNavigation() {
   const handleLogout = async () => {
     try {
       await logout();
+    } finally {
       clearIsAuthenticated();
       router.push("/sign-in");
-    } catch {
-      clearIsAuthenticated();
-      router.push("/sign-in");
+      router.refresh();
     }
   };
 
-  if (isAuthenticated) {
+  if (!isAuthenticated) {
     return (
-      <>
+      <nav aria-label="Authentication Navigation">
+        <ul>
+          <li>
+            <Link href="/sign-in">Login</Link>
+          </li>
+
+          <li>
+            <Link href="/sign-up">Register</Link>
+          </li>
+        </ul>
+      </nav>
+    );
+  }
+
+  return (
+    <nav aria-label="Authentication Navigation">
+      <ul>
+        <li>
+          <span>{user?.username ?? user?.email}</span>
+        </li>
+
         <li>
           <Link href="/profile">Profile</Link>
         </li>
@@ -40,19 +59,7 @@ export default function AuthNavigation() {
             Logout
           </button>
         </li>
-      </>
-    );
-  }
-
-  return (
-    <>
-      <li>
-        <Link href="/sign-up">Register</Link>
-      </li>
-
-      <li>
-        <Link href="/sign-in">Login</Link>
-      </li>
-    </>
+      </ul>
+    </nav>
   );
 }
