@@ -1,142 +1,126 @@
 "use client";
 
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { useRouter } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import * as Yup from "yup";
+
+import { createNote } from "@/lib/api";
+import { useNoteStore } from "@/lib/store/noteStore";
+import type { CreateNoteData } from "@/types/note";
 
 import css from "./NoteForm.module.css";
 
-import { createNote } from "@/lib/api";
-import type { CreateNoteData } from "@/types/note";
+const tags = [
+  "Todo",
+  "Work",
+  "Personal",
+  "Meeting",
+  "Shopping",
+];
 
-interface NoteFormProps {
-  onClose: () => void;
-}
-
-const validationSchema = Yup.object({
-  title: Yup.string()
-    .min(3, "Minimum 3 characters")
-    .max(50, "Maximum 50 characters")
-    .required("Required"),
-
-  content: Yup.string().max(
-    500,
-    "Maximum 500 characters"
-  ),
-
-  tag: Yup.string()
-    .oneOf([
-      "Todo",
-      "Work",
-      "Personal",
-      "Meeting",
-      "Shopping",
-    ])
-    .required("Required"),
-});
-
-export default function NoteForm({
-  onClose,
-}: NoteFormProps) {
+export default function NoteForm() {
+  const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { draft, setDraft, clearDraft } = useNoteStore();
 
   const mutation = useMutation({
     mutationFn: createNote,
 
     onSuccess: () => {
+      clearDraft();
+
       queryClient.invalidateQueries({
         queryKey: ["notes"],
       });
 
-      onClose();
+      router.push("/notes/filter/all");
     },
   });
 
-  const initialValues: CreateNoteData = {
-    title: "",
-    content: "",
-    tag: "Todo",
+  const handleSubmit = (formData: FormData) => {
+    const title = String(formData.get("title") ?? "");
+    const content = String(formData.get("content") ?? "");
+    const tag = String(formData.get("tag") ?? "Todo");
+
+    if (title.trim().length < 3 || title.trim().length > 50) {
+      return;
+    }
+
+    if (content.length > 500) {
+      return;
+    }
+
+    const note: CreateNoteData = {
+      title: title.trim(),
+      content,
+      tag,
+    };
+
+    mutation.mutate(note);
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(values) => mutation.mutate(values)}
-    >
-      <Form className={css.form}>
-        <label className={css.label}>
-          Title
+    <form className={css.form} action={handleSubmit}>
+      <label className={css.formGroup}>
+        Title
+        <input
+          name="title"
+          defaultValue={draft.title}
+          className={css.input}
+          onChange={(event) =>
+            setDraft({ title: event.target.value })
+          }
+        />
+      </label>
 
-          <Field
-            name="title"
-            className={css.input}
-          />
+      <label className={css.formGroup}>
+        Content
+        <textarea
+          name="content"
+          rows={5}
+          defaultValue={draft.content}
+          className={css.textarea}
+          onChange={(event) =>
+            setDraft({ content: event.target.value })
+          }
+        />
+      </label>
 
-          <ErrorMessage
-            name="title"
-            component="span"
-            className={css.error}
-          />
-        </label>
+      <label className={css.formGroup}>
+        Tag
+        <select
+          name="tag"
+          defaultValue={draft.tag}
+          className={css.select}
+          onChange={(event) =>
+            setDraft({ tag: event.target.value })
+          }
+        >
+          {tags.map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
+      </label>
 
-        <label className={css.label}>
-          Content
+      <div className={css.actions}>
+        <button
+          type="submit"
+          className={css.submitButton}
+          disabled={mutation.isPending}
+        >
+          {mutation.isPending ? "Creating..." : "Create"}
+        </button>
 
-          <Field
-            as="textarea"
-            rows={5}
-            name="content"
-            className={css.textarea}
-          />
-
-          <ErrorMessage
-            name="content"
-            component="span"
-            className={css.error}
-          />
-        </label>
-
-        <label className={css.label}>
-          Tag
-
-          <Field
-            as="select"
-            name="tag"
-            className={css.select}
-          >
-            <option value="Todo">Todo</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Shopping">Shopping</option>
-          </Field>
-
-          <ErrorMessage
-            name="tag"
-            component="span"
-            className={css.error}
-          />
-        </label>
-
-        <div className={css.actions}>
-          <button
-            type="submit"
-            className={css.button}
-            disabled={mutation.isPending}
-          >
-            {mutation.isPending ? "Creating..." : "Create"}
-          </button>
-
-          <button
-            type="button"
-            className={css.button}
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-        </div>
-      </Form>
-    </Formik>
+        <button
+          type="button"
+          className={css.cancelButton}
+          onClick={() => router.back()}
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }

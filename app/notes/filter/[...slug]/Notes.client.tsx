@@ -1,18 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 import {
-  useQuery,
   keepPreviousData,
+  useQuery,
 } from "@tanstack/react-query";
 
 import { fetchNotes } from "@/lib/api";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
-import Modal from "@/components/Modal/Modal";
-import NoteForm from "@/components/NoteForm/NoteForm";
 import NoteList from "@/components/NoteList/NoteList";
 
 interface NotesClientProps {
@@ -25,7 +24,6 @@ export default function NotesClient({
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [inputValue, setInputValue] = useState("");
-  const [isOpen, setIsOpen] = useState(false);
 
   const perPage = 12;
 
@@ -66,9 +64,9 @@ export default function NotesClient({
           />
         )}
 
-        <button onClick={() => setIsOpen(true)}>
+        <Link href="/notes/action/create">
           Create note +
-        </button>
+        </Link>
       </header>
 
       {isLoading && <p>Loading...</p>}
@@ -79,12 +77,6 @@ export default function NotesClient({
 
       {data && data.notes.length > 0 && (
         <NoteList notes={data.notes} />
-      )}
-
-      {isOpen && (
-        <Modal onClose={() => setIsOpen(false)}>
-          <NoteForm onClose={() => setIsOpen(false)} />
-        </Modal>
       )}
     </main>
   );
