@@ -4,7 +4,7 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/serverApi";
 import { getQueryClient } from "@/lib/getQueryClient";
 
 import NotesClient from "./Notes.client";
@@ -41,7 +41,9 @@ export async function generateMetadata({
   };
 }
 
-export default async function NotesPage({ params }: Props) {
+export default async function NotesPage({
+  params,
+}: Props) {
   const { slug } = await params;
 
   const tag = slug[0] === "all" ? undefined : slug[0];

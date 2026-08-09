@@ -13,3 +13,4 @@ export interface CreateNoteData {
   content: string;
   tag: string;
 }
+

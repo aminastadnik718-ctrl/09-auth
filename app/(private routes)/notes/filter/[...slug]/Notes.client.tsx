@@ -8,7 +8,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 
-import { fetchNotes } from "@/lib/api";
+import { fetchNotes } from "@/lib/api/clientApi";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
@@ -27,10 +27,13 @@ export default function NotesClient({
 
   const perPage = 12;
 
-  const updateSearch = useDebouncedCallback((value: string) => {
-    setSearch(value);
-    setPage(1);
-  }, 500);
+  const updateSearch = useDebouncedCallback(
+    (value: string) => {
+      setSearch(value);
+      setPage(1);
+    },
+    500,
+  );
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["notes", page, search, tag],
@@ -77,6 +80,10 @@ export default function NotesClient({
 
       {data && data.notes.length > 0 && (
         <NoteList notes={data.notes} />
+      )}
+
+      {data && data.notes.length === 0 && !isLoading && (
+        <p>No notes found.</p>
       )}
     </main>
   );
