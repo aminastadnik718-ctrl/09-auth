@@ -51,6 +51,12 @@ export async function proxy(request: NextRequest) {
           }
         }
 
+        if (isPublicRoute) {
+          return NextResponse.redirect(
+            new URL("/", request.url),
+          );
+        }
+
         return response;
       }
     } catch {
